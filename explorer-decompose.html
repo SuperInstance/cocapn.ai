@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLATO Explorer — Cocapn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --surface: #111827;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .mono { font-family: 'Space Mono', monospace; }
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .back-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .back-link:hover { color: var(--text); }
+    .container {
+      text-align: center;
+      padding: 4rem 2rem;
+      max-width: 700px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    .demo-placeholder {
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 3rem;
+      background: var(--surface);
+    }
+    .demo-placeholder .icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      opacity: 0.5;
+    }
+    .tagline {
+      font-family: 'Space Mono', monospace;
+      color: #f59e0b;
+      margin-top: 2rem;
+    }
+    .coming-soon {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--accent);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back to Fleet Home
+    </a>
+  </nav>
+  <div class="container">
+    <span class="coming-soon mono">LIVE DEMO</span>
+    <h1>PLATO Task Decomposition</h1>
+    <div class="demo-placeholder">
+      <svg class="icon" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="28" stroke="#3b82f6" stroke-width="2"/>
+        <circle cx="32" cy="32" r="16" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <circle cx="32" cy="32" r="6" fill="#3b82f6" opacity="0.6"/>
+        <line x1="32" y1="4" x2="32" y2="60" stroke="#3b82f6" stroke-width="0.5" opacity="0.3"/>
+        <line x1="4" y1="32" x2="60" y2="32" stroke="#3b82f6" stroke-width="0.5" opacity="0.3"/>
+      </svg>
+      <p>The PLATO Explorer visualizes how complex tasks get decomposed into sub-tasks, routed to the right agents, and reassembled into results.</p>
+      <p style="margin-bottom:0;">This interactive demo renders the decomposition tree live — watch tasks break down, see which agent handles each piece, and follow the reassembly back up.</p>
+    </div>
+    <p class="tagline mono">// Built by the fleet, for the fleet</p>
+  </div>
+</body>
+</html>
