@@ -13,22 +13,40 @@ class CocapnPlatoClient {
 
     /** Fetch all rooms */
     public function get_all_rooms(): array {
+        // PLATO returns dict {"room_name": {tile_count, created}, ...}
+        $data = $this->api_get('/rooms');
+        return is_array($data) ? $data : [];
         return $this->api_get('/rooms');
     }
 
     /** Fetch a single room by name */
     public function get_room(string $name): array {
+        // Response: {tiles: [{domain, agent, question, answer, tags}]}
+        $data = $this->api_get('/room/' . urlencode($name));
+        return is_array($data) ? $data : [];
         $encoded = urlencode($name);
         return $this->api_get("/room/{$encoded}");
     }
 
     /** Submit a new tile to PLATO */
     public function submit_tile(array $tile): array {
+        // PLATO expects: domain, agent, question, tags[]
+        $payload = [
+            'domain' => $tile['room'] ?? $tile['domain'] ?? 'general',
+            'agent' => $tile['agent'] ?? 'cocapn-www',
+            'question' => $tile['content'] ?? $tile['question'] ?? '',
+        ];
+        if (!empty($tile['tags'])) $payload['tags'] = $tile['tags'];
+        return $this->api_post('/submit', $payload);
         return $this->api_post('/submit', $tile);
     }
 
     /** Search tiles across all rooms */
     public function search_tiles(string $query): array {
+        // Response: {results: [{room, domain, question, answer}]}
+        $data = $this->api_get('/search?q=' . urlencode($query));
+        if (isset($data['results']) && is_array($data['results'])) return $data['results'];
+        return is_array($data) ? $data : [];
         return $this->api_get('/search?q=' . urlencode($query));
     }
 

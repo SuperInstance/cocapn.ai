@@ -84,7 +84,7 @@ $room_data = $selected ? $plato->get_room($selected) : [];
             <?php if (isset($tile['id'])): ?><span class="mono">#<?= htmlspecialchars($tile['id']) ?></span><?php endif; ?>
             <?php if (isset($tile['timestamp'])): ?><span style="margin-left:0.5rem;color:var(--muted)"><?= htmlspecialchars($tile['timestamp']) ?></span><?php endif; ?>
           </div>
-          <div class="tile-content"><?= htmlspecialchars($tile['content'] ?? $tile['text'] ?? json_encode($tile)) ?></div>
+          <div class="tile-content"><?= htmlspecialchars(substr($tile['question'] ?? $tile['answer'] ?? '', 0, 200) ?? json_encode($tile)) ?></div>
           <?php if (!empty($tile['tags'])): ?>
           <div style="margin-top:0.4rem">
             <?php foreach((array)$tile['tags'] as $tag): ?>
