@@ -315,6 +315,20 @@
     }
     .dojo-card-desc { font-size: 0.78rem; color: var(--muted); }
 
+    .btn-sandbox {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      background: var(--keeper);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-sandbox:hover { background: #fbbf24; transform: translateY(-2px); text-decoration: none; }
+
     /* Links */
     .links-section {
       padding: 3rem 2rem;
@@ -540,6 +554,36 @@
   </section>
 
   <!-- Links -->
+
+  <!-- FLUX Sandbox -->
+  <section class="papers-section">
+    <div class="papers-inner">
+      <div class="papers-title mono">Live Demo — FLUX ISA v3.0 Playground</div>
+      <div style="text-align:center; margin-bottom:1.5rem;">
+        <a href="/flux-sandbox.html" class="btn-sandbox">
+          ⚡ Open FLUX Sandbox
+        </a>
+      </div>
+      <div class="papers-grid">
+        <a href="/flux-sandbox.html" class="paper-card" style="text-decoration:none;">
+          <div class="paper-name">FLUX Sandbox</div>
+          <div class="paper-desc">Run FLUX bytecode directly in your browser. Full VM — registers, memory, all opcodes. Pure JavaScript, no server required.</div>
+          <div class="paper-link">Try it →</div>
+        </a>
+        <a href="https://github.com/SuperInstance/flux-vm-php" class="paper-card" style="text-decoration:none;">
+          <div class="paper-name">PHP Reference VM</div>
+          <div class="paper-desc">Complete FLUX ISA v3.0 implementation in PHP 8.0+. 2,057 lines, all 100+ opcodes, tested and published on GitHub.</div>
+          <div class="paper-link">View source →</div>
+        </a>
+        <a href="https://github.com/SuperInstance/flux-research/tree/main/specs" class="paper-card" style="text-decoration:none;">
+          <div class="paper-name">FLUX ISA Specification</div>
+          <div class="paper-desc">645 lines, ~5,300 words. Register model, 6 instruction formats, 100+ opcodes, A2A protocol, memory model, calling convention.</div>
+          <div class="paper-link">Read spec →</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <section class="links-section">
     <div class="links-grid">
       <a href="https://cocapn.ai/explorer-decompose.html" class="link-card">
