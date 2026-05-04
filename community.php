@@ -3,19 +3,20 @@ $plato = new CocapnPlatoClient();
 $rooms = $plato->get_all_rooms() ?: [];
 
 // Collect recent tiles from all rooms
+// PLATO returns dict: {"room_name": {tile_count, created}, ...}
 $recent_tiles = [];
-foreach(array_slice($rooms, 0, 20) as $r) {
-  $rname = is_array($r) ? ($r['name'] ?? $r) : $r;
-  $room_data = $plato->get_room($rname);
-  $tiles = $room_data['tiles'] ?? [];
-  if (is_array($tiles) && count($tiles) > 0) {
-    foreach(array_slice($tiles, -5) as $t) {
-      $t['room'] = $rname;
-      $recent_tiles[] = $t;
+$room_names = array_slice(array_keys($rooms), 0, 20);
+foreach ($room_names as $rname) {
+    $room_data = $plato->get_room($rname);
+    $tiles = $room_data['tiles'] ?? [];
+    if (is_array($tiles) && count($tiles) > 0) {
+        foreach (array_slice($tiles, -5) as $t) {
+            $t['room'] = $rname;
+            $recent_tiles[] = $t;
+        }
     }
-  }
 }
-usort($recent_tiles, fn($a,$b) => strcmp($a['timestamp'] ?? '', $b['timestamp'] ?? ''));
+usort($recent_tiles, fn($a, $b) => strcmp($a['timestamp'] ?? '', $b['timestamp'] ?? ''));
 $recent_tiles = array_slice($recent_tiles, -20);
 ?>
 <!DOCTYPE html>
@@ -80,13 +81,13 @@ $recent_tiles = array_slice($recent_tiles, -20);
         <?php foreach($recent_tiles as $tile): ?>
         <div class="tile-item">
           <div class="tile-meta">
-            <span class="badge gray"><?= htmlspecialchars($tile['room']) ?></span>
-            <?php if (isset($tile['timestamp'])): ?>
-            <span style="margin-left:0.5rem;color:var(--muted)"><?= htmlspecialchars($tile['timestamp']) ?></span>
+            <span class="badge gray"><?= htmlspecialchars($tile['room'] ?? '') ?></span>
+            <?php if (isset($tile['agent'])): ?>
+            <span style="margin-left:0.5rem;color:var(--muted)">by <?= htmlspecialchars($tile['agent']) ?></span>
             <?php endif; ?>
           </div>
           <div class="tile-content" style="font-size:0.85rem">
-            <?= htmlspecialchars(substr($tile['content'] ?? $tile['text'] ?? json_encode($tile), 0, 120)) ?>
+            <?= htmlspecialchars(substr($tile['question'] ?? $tile['answer'] ?? '', 0, 120)) ?>
           </div>
         </div>
         <?php endforeach; ?>
