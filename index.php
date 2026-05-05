@@ -109,15 +109,15 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
         </svg>
       </div>
       <h1>Build Agents.<br>Raise Agents.</h1>
-      <p class="index-intro">
-        <strong>CoCapn</strong> is a fleet of autonomous agents that learn, coordinate, and ship — 
-        built on <strong>PLATO</strong>, the persistent learning and tile orchestration system.
-        Each vessel runs specialized hardware. Every tile submitted is knowledge that compounds.
+      <p class="index-intro" style="margin-top:0.5rem">
+        <strong>FLUX Certify</strong> — Coq-verified constraint certificates for safety-critical systems.<br>
+        DO-254 DAL A · ISO 26262 ASIL-D · IEC 61508 SIL 3
       </p>
       <div class="quick-links">
         <a href="fleet.php">Fleet Status</a>
         <a href="explorer.php">Explore PLATO</a>
         <a href="docs.php">Documentation</a>
+        <a href="certify.php" style="border-color:var(--accent);color:var(--accent)">FLUX Certify</a>
         <a href="https://github.com/SuperInstance">GitHub</a>
       </div>
     </div>
@@ -147,33 +147,61 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
     <!-- Fleet cards -->
     <div class="section-header" style="margin-top:3rem">
       <h2>The Fleet</h2>
-      <p>Four vessels, each with a specialized role.</p>
+      <p>Five vessels, each with a specialized role.</p>
     </div>
     <div class="fleet-row">
       <?php
       $vessels = [
+        ['name' => 'FLUX Certify', 'role' => 'Revenue — Coq-verified certificates', 'key' => 'certify', 'desc' => 'Constraint certificates for safety-critical systems. DO-254 DAL A, ISO 26262 ASIL-D, IEC 61508 SIL 3.', 'url' => 'certify.php', 'live' => true, 'pilot' => '$10K pilot available'],
         ['name' => 'Oracle1', 'role' => 'Keeper — Oracle Cloud ARM64', 'key' => 'oracle1', 'desc' => 'Architecture, PLATO, fleet coordination. GLM-5.1 reasoning.'],
         ['name' => 'JetsonClaw1', 'role' => 'Edge — Jetson Orin GPU', 'key' => 'jetson', 'desc' => 'Hardware, sensor fusion, CUDA workloads. Offline-capable.'],
         ['name' => 'Forgemaster', 'role' => 'Foundry — RTX 4050 + AVX-512', 'key' => 'forgemaster', 'desc' => 'LoRA training, Rust compilation, constraint-to-native.'],
         ['name' => 'CCC', 'role' => 'Public Face — Kimi K2.5 / Telegram', 'key' => 'ccc', 'desc' => 'User-facing agent. Real questions from real users.'],
       ];
-      $status_colors = ['oracle1' => 'yellow', 'jetson' => 'gray', 'forgemaster' => 'green', 'ccc' => 'green'];
+      $status_colors = ['certify' => 'green', 'oracle1' => 'yellow', 'jetson' => 'gray', 'forgemaster' => 'green', 'ccc' => 'green'];
       foreach ($vessels as $v):
-        $up = isset($fleet['agents']) && is_array($fleet['agents']) ? array_filter($fleet['agents'], fn($a) => stripos($a['name'] ?? '', $v['key']) !== false) : [];
-        $is_up = count($up) > 0;
+        $is_certify = ($v['key'] === 'certify');
+        $is_up = $is_certify ? true : (isset($fleet['agents']) && is_array($fleet['agents']) ? count(array_filter($fleet['agents'], fn($a) => stripos($a['name'] ?? '', $v['key']) !== false)) > 0 : false);
       ?>
-      <div class="fleet-card">
+      <div class="fleet-card" <?= $is_certify ? 'style="border-color: var(--accent);"' : '' ?>>
         <div>
-          <div class="vessel-name"><?= $v['name'] ?></div>
+          <div class="vessel-name"><?= $v['name'] ?><?= isset($v['live']) ? ' <span class="live-indicator" style="margin-left:0.5rem"><span class="live-dot"></span></span>' : '' ?></div>
           <div class="vessel-role"><?= $v['role'] ?></div>
+          <?php if ($is_certify): ?>
+          <div style="font-size:0.75rem;color:var(--accent);margin-top:0.25rem"><?= $v['pilot'] ?></div>
+          <?php endif; ?>
         </div>
         <div class="status-row">
-          <span class="status-dot <?= $status_colors[$v['key']] ?>"></span>
-          <span style="font-size:0.8rem; color:var(--muted)"><?= $is_up ? 'Active' : 'Offline' ?></span>
+          <span class="status-dot <?= $status_colors[$v['key']] ?>" style="<?= $is_certify ? 'background:var(--success);box-shadow:0 0 6px var(--success)' : '' ?>"></span>
+          <span style="font-size:0.8rem; color:var(--muted)"><?= $is_up ? ($is_certify ? 'Pilot Open' : 'Active') : 'Offline' ?></span>
         </div>
         <p style="font-size:0.85rem;color:var(--muted);margin:0"><?= $v['desc'] ?></p>
+        <?php if ($is_certify): ?>
+        <a href="<?= $v['url'] ?>" class="btn btn-outline" style="margin-top:0.75rem;font-size:0.8rem">View Product →</a>
+        <?php endif; ?>
       </div>
       <?php endforeach; ?>
+    </div>
+
+    <!-- Commercial Products -->
+    <div class="section-header" style="margin-top:3rem">
+      <h2>Commercial Products</h2>
+      <p>Revenue-critical paths powering the fleet.</p>
+    </div>
+    <div style="max-width:640px;margin:0 auto">
+      <div class="card" style="border-left:3px solid var(--accent);padding:1.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:1rem;flex-wrap:wrap">
+          <div>
+            <h3 style="margin:0 0 0.5rem">FLUX Certify</h3>
+            <p style="color:var(--muted);margin:0;font-size:0.95rem">
+              <strong style="color:var(--text)">$10K pilot</strong> · <strong style="color:var(--text)">$50K/year subscription</strong>.<br>
+              Coq-verified constraint certificates for safety-critical systems.<br>
+              DO-254 DAL A · ISO 26262 ASIL-D · IEC 61508 SIL 3.
+            </p>
+          </div>
+          <a href="certify.php" class="btn btn-primary" style="white-space:nowrap">Get Started</a>
+        </div>
+      </div>
     </div>
 
     <!-- What is PLATO -->
