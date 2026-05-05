@@ -20,6 +20,8 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
     <a href="fleet.php" class="<?= $current_page === 'fleet' ? 'active' : '' ?>">Fleet</a>
     <a href="explorer.php" class="<?= $current_page === 'explorer' ? 'active' : '' ?>">Explorer</a>
     <a href="flux.php" class="<?= $current_page === 'flux' ? 'active' : '' ?>">FLUX</a>
+    <a href="benchmark.php" class="<?= $current_page === 'benchmark' ? 'active' : '' ?>">Benchmark</a>
+    <a href="constraint-playground.php" class="<?= $current_page === 'constraint-playground' ? 'active' : '' ?>">Playground</a>
     <a href="learn.php" class="<?= $current_page === 'learn' ? 'active' : '' ?>">Learn</a>
     <a href="docs.php" class="<?= $current_page === 'docs' ? 'active' : '' ?>">Docs</a>
     <a href="examples.php" class="<?= $current_page === 'examples' ? 'active' : '' ?>">Examples</a>
