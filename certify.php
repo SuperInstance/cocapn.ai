@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Certify service unavailable. Is the backend running on port 5000?';
             }
         } elseif ($action === 'certify') {
-            $url = "$certify_url/certify";
+            $url = "$certify_url/prove";
             $response = @file_get_contents($url, false, $context);
             if ($response) {
                 $data = json_decode($response, true);
