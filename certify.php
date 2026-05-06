@@ -357,6 +357,147 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
+
+  <!-- LIVE DEMO -->
+  <style>
+    .demo-section {
+      background: linear-gradient(135deg, #0a1628 0%, #0f2942 100%);
+      border: 1px solid #1a3a5c;
+      border-radius: 14px;
+      padding: 2rem;
+      margin: 0 -1rem 2rem -1rem;
+    }
+    .demo-section h2 { color: #fff; margin: 0 0 0.25rem; font-size: 1.4rem; }
+    .demo-section > p { color: #64748b; margin: 0 0 1.25rem; font-size: 0.9rem; }
+    .demo-examples { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-bottom: 1rem; }
+    .demo-examples-label { font-size: 0.8rem; color: var(--muted); margin-right: 0.25rem; }
+    .demo-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: 'Space Mono', monospace;
+      transition: all 0.15s;
+    }
+    .demo-chip:hover { background: var(--accent-glow); border-color: var(--accent); color: #fff; }
+    .demo-textarea { font-size: 1rem; min-height: 88px; margin-bottom: 0.75rem; resize: vertical; }
+    .demo-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .demo-output {
+      margin-top: 1rem;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .demo-output.visible { display: block; animation: demoFadeIn 0.25s ease; }
+    @keyframes demoFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .demo-output-header {
+      background: var(--surface2);
+      padding: 0.6rem 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .demo-output pre { margin: 0; max-height: 320px; overflow: auto; font-size: 0.78rem; line-height: 1.7; }
+    .output-section { margin-bottom: 1rem; }
+    .output-section:last-child { margin-bottom: 0; }
+    .output-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+    .verified-badge {
+      background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35);
+      color: #22c55e; padding: 0.2rem 0.6rem; border-radius: 4px;
+      font-size: 0.75rem; font-family: 'Space Mono', monospace;
+    }
+    .demo-error {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: #ef4444; padding: 0.75rem 1rem; border-radius: 8px;
+      font-size: 0.85rem; margin-top: 0.5rem;
+    }
+    .demo-spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: demoSpin 0.6s linear infinite;
+      margin-right: 0.5rem; vertical-align: middle;
+    }
+    @keyframes demoSpin { to { transform: rotate(360deg); } }
+    .ops-badge {
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.35);
+      color: #60a5fa; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem;
+    }
+  </style>
+
+  <div class="demo-section">
+    <h2>Live Demo — Try It Now</h2>
+    <p>Type a constraint below and see FLUX-C bytecode + Coq proof — instant, no install.</p>
+
+    <div class="demo-examples">
+      <span class="demo-examples-label">Try:</span>
+      <button class="demo-chip" onclick="loadExample(this.textContent)">battery_temp in [15, 55]</button>
+      <button class="demo-chip" onclick="loadExample(this.textContent)">sonar_frequency in [10, 50]</button>
+      <button class="demo-chip" onclick="loadExample(this.textContent)">decel in [0.1, 0.8] when speed > 5</button>
+      <button class="demo-chip" onclick="loadExample(this.textContent)">regen_current in [-200, 0]</button>
+    </div>
+
+    <textarea id="demo-guard" class="guard-input demo-textarea"
+      placeholder="Enter a guard constraint, e.g.: battery_temp in [15, 55] with priority HIGH"></textarea>
+
+    <div class="demo-actions">
+      <button class="btn-primary" onclick="runDemo('compile')">⚡ Compile to FLUX-C</button>
+      <button class="btn-secondary" onclick="runDemo('prove')">📜 Generate Proof Certificate</button>
+    </div>
+
+    <div id="demo-output" class="demo-output"></div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000';
+    function loadExample(text) {
+      document.getElementById('demo-guard').value = text;
+    }
+    async function runDemo(action) {
+      const guard = document.getElementById('demo-guard').value.trim();
+      if (!guard) { alert('Enter a constraint first'); return; }
+      const out = document.getElementById('demo-output');
+      out.innerHTML = '<span class="demo-spinner"></span>' + (action === 'compile' ? 'Compiling...' : 'Generating proof...');
+      out.classList.add('visible');
+      try {
+        const r = await fetch(API + '/' + action, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({guard})
+        });
+        const d = await r.json();
+        if (d.error) {
+          out.innerHTML = '<div class="demo-error">&#9888; ' + d.error + '</div>';
+        } else if (action === 'compile') {
+          out.innerHTML = '<div class="output-section">' +
+            '<div class="output-label">Guard Hash &amp; Size</div>' +
+            '<div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.75rem">' +
+            '<code style="color:var(--accent)">' + (d.guard_hash || '?') + '</code>' +
+            '<span class="ops-badge">' + (d.ops || 0) + ' ops</span></div>' +
+            '<div class="output-label">FLUX-C Bytecode</div>' +
+            '<pre style="color:#22c55e">' + escapeHtml(d.asm || '') + '</pre></div>';
+        } else {
+          const badge = d.verified
+            ? '<span class="verified-badge">&#10003; PROVEN</span>'
+            : '<span style="color:#ef4444">&#10007; UNVERIFIED</span>';
+          out.innerHTML = '<div class="demo-output-header"><span>' +
+            (d.guard_hash || '?') + '</span>' + badge + '</div><pre>' +
+            escapeHtml(JSON.stringify(d, null, 2)) + '</pre>';
+        }
+      } catch(e) {
+        out.innerHTML = '<div class="demo-error">&#9888; Backend unavailable. FLUX Certify must be running on port 5000.</div>';
+      }
+    }
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+
   <!-- Tabs -->
   <div class="tab-bar">
     <a href="?tab=compile" class="<?= $active_tab === 'compile' ? 'active' : '' ?>">⚡ Compile</a>
