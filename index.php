@@ -213,7 +213,7 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
               If not, you'll know exactly <strong style="color:var(--text)">why</strong> it failed, formally.
             </p>
             <div style="margin-top:1rem;font-size:0.8rem;color:var(--muted)">
-              DO-254 DAL A · ISO 26262 ASIL-D · IEC 61508 SIL 3
+              DO-254 DAL A · IEC 61508 SIL 3 · DNV AROS
             </div>
           </div>
           <a href="certify.php" class="btn btn-primary" style="white-space:nowrap;font-size:1rem;padding:0.75rem 1.5rem">Start the Pilot →</a>
