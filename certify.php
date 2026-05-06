@@ -405,7 +405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="certify-hero">
   <h1>FLUX Certify<span class="theorem-badge">[PROVEN]</span></h1>
-  <p>Compile guard constraints to FLUX-C bytecode with Coq-verified proof certificates.
+  <p>Compile guard constraints to FLUX-C bytecode. Guard expression normalization is verified in Coq; full FLUX-C ISA verification is in progress.
      For aerospace, automotive, marine, and medical safety-critical systems.</p>
 </div>
 
@@ -506,7 +506,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="demo-section">
     <h2>Live Demo — See FLUX-C in Action</h2>
-    <p>Type a constraint below and see FLUX-C bytecode + Coq proof — already running — no install needed.</p>
+    <p>Type a constraint below and see FLUX-C bytecode — no install needed.</p>
 
     <div class="demo-examples">
       <span class="demo-examples-label">Try:</span>
@@ -657,21 +657,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div style="margin-top:1rem">
             <span class="theorem-status">[PROVEN]</span>
             <span style="font-size:0.8rem;color:var(--muted);margin-left:0.5rem">
-              fluxc_terminates — all programs halt structurally
+              fluxc_terminates — guard programs halt structurally (Coq proof for guard normalization)
             </span>
           </div>
         <?php else: ?>
           <!-- Default state -->
           <div class="theorem-card">
             <h3>FLUX-C Turing-Incompleteness</h3>
-            <div class="theorem-name">fluxc_terminates <span class="theorem-status">[PROVEN]</span></div>
+            <div class="theorem-name">fluxc_terminates <span class="theorem-status">[PARTIAL — guard normalization only]</span></div>
             <p style="font-size:0.9rem;color:var(--muted);margin:0.75rem 0">
               <strong style="color:var(--text)">All FLUX-C programs halt in bounded time.</strong>
               No backward jumps. MAX_STACK bounded to 100 by hardware.
-              Mechanized in Coq — no hand-waving.
+              Mechanized in Coq for guard expression normalization. Full FLUX-C ISA verification is planned.
             </p>
             <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem">
-              <span class="coq-badge">🐓 Coq 8.15+</span>
+              <span class="coq-badge">🐓 Coq 8.15+ (guard normalization)</span>
               <span class="coq-badge">📄 FluxC/FluxC.v</span>
               <span class="coq-badge">🔗 github.com/SuperInstance/flux-certify</span>
             </div>
@@ -724,7 +724,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <?php if (!empty($result['task_id'])): ?>
           <div style="margin:1rem 0">
             <a href="download.php?task_id=<?= urlencode($result['task_id']) ?>" class="btn-primary" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none">
-              📥 Download Coq Proof Artifact
+              📥 Download FLUX-C Artifact
             </a>
           </div>
           <?php endif; ?>
@@ -764,19 +764,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
 
           <div class="proof-card" style="background:rgba(34,197,94,0.05)">
-            <h3 style="color:#22c55e">fluxc_terminates</h3>
+            <h3 style="color:#22c55e">fluxc_terminates (partial)</h3>
             <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0">
               <?= htmlspecialchars($result['theorem_description']) ?>
             </p>
             <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.75rem">
-              <span class="coq-badge">🐓 Coq Verified</span>
+              <span class="coq-badge">🐓 Coq (guard normalization)</span>
               <span class="coq-badge">⚡ FLUX-C v<?= htmlspecialchars($result['flux_c_version']) ?></span>
               <span class="coq-badge">🔗 <?= htmlspecialchars($result['prover']) ?></span>
             </div>
           </div>
         <?php else: ?>
           <div class="theorem-card">
-            <h3>Theorem: fluxc_terminates</h3>
+            <h3>Theorem: fluxc_terminates (guard normalization)</h3>
             <p style="font-size:0.9rem;color:var(--muted);margin:0.75rem 0">
               Every FLUX-C program halts in bounded time. This is proven structurally:
             </p>
@@ -838,7 +838,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h3>Formal Theorems</h3>
     <div class="grid-2" style="gap:1.5rem">
       <div class="theorem-card">
-        <div class="theorem-name">fluxc_terminates <span class="theorem-status">[PROVEN]</span></div>
+        <div class="theorem-name">fluxc_terminates <span class="theorem-status">[PARTIAL — guard normalization only]</span></div>
         <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0">
           All FLUX-C programs halt in bounded time. No infinite execution paths.
           Mechanized in Coq. 100% coverage — no unverified edge cases.
