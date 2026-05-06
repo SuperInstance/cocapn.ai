@@ -2,11 +2,85 @@
 /**
  * FLUX Certify — Proof certificates for safety-critical constraints
  * Connects to FLUX Certify backend at localhost:5000
+ * 
+ * For the live demo (JavaScript AJAX calls), this page acts as a server-side
+ * proxy to port 5000. The JavaScript calls certify.php via POST with
+ * X-Requested-With: XMLHttpRequest, and this PHP forwards to the backend.
  */
+
+// Server-side API proxy for AJAX demo calls (bypasses Cloudflare /api/ 404)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+    $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    header('Content-Type: application/json');
+    $input = json_decode(file_get_contents('php://input'), true);
+    $guard = trim($input['guard'] ?? '');
+    $action = $input['action'] ?? '';
+    if (empty($guard)) {
+        echo json_encode(['error' => 'No guard constraint']);
+        exit;
+    }
+    if (!in_array($action, ['compile', 'prove'])) {
+        echo json_encode(['error' => 'Unknown action']);
+        exit;
+    }
+    $certify_url = 'http://127.0.0.1:5000';
+    $payload = json_encode(['guard' => $guard]);
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/json\r
+",
+            'content' => $payload,
+            'timeout' => 10,
+            'ignore_errors' => true,
+        ]
+    ]);
+    $response = @file_get_contents($certify_url . '/' . $action, false, $context);
+    if ($response) {
+        echo $response;
+    } else {
+        echo json_encode(['error' => 'FLUX Certify backend unavailable (port 5000 not reachable)']);
+    }
+    exit;
+}
 
 $certify_url = 'http://127.0.0.1:5000';
 $result = null;
 $error = null;
+
+// Pre-compute example results for the live demo (always visible to external users)
+$demo_examples = [];
+$example_guards = [
+    'battery_temp in [15, 55]',
+    'sonar_frequency in [10, 50]',
+    'decel in [0.1, 0.8] when speed > 5',
+    'regen_current in [-200, 0]',
+];
+foreach ($example_guards as $g) {
+    $payload = json_encode(['guard' => $g]);
+    $ctx = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/json
+",
+            'content' => $payload,
+            'timeout' => 3,
+            'ignore_errors' => true,
+        ]
+    ]);
+    $resp = @file_get_contents($certify_url . '/compile', false, $ctx);
+    if ($resp) {
+        $d = json_decode($resp, true);
+        if ($d) {
+            $demo_examples[$g] = [
+                'hash' => $d['guard_hash'] ?? '',
+                'ops' => $d['ops'] ?? 0,
+                'asm' => $d['asm'] ?? '',
+            ];
+        }
+    }
+}
 $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'compile';
 $guard_param = isset($_GET['guard']) ? $_GET['guard'] : '';
 
@@ -431,19 +505,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </style>
 
   <div class="demo-section">
-    <h2>Live Demo — Try It Now</h2>
-    <p>Type a constraint below and see FLUX-C bytecode + Coq proof — instant, no install.</p>
+    <h2>Live Demo — See FLUX-C in Action</h2>
+    <p>Type a constraint below and see FLUX-C bytecode + Coq proof — already running — no install needed.</p>
 
     <div class="demo-examples">
       <span class="demo-examples-label">Try:</span>
-      <button class="demo-chip" onclick="loadExample(this.textContent)">battery_temp in [15, 55]</button>
-      <button class="demo-chip" onclick="loadExample(this.textContent)">sonar_frequency in [10, 50]</button>
-      <button class="demo-chip" onclick="loadExample(this.textContent)">decel in [0.1, 0.8] when speed > 5</button>
-      <button class="demo-chip" onclick="loadExample(this.textContent)">regen_current in [-200, 0]</button>
+      <button class="demo-chip" data-example="battery_temp in [15, 55]" onclick="showDemoResult(this.dataset.example)">battery_temp in [15, 55]</button>
+      <button class="demo-chip" data-example="sonar_frequency in [10, 50]" onclick="showDemoResult(this.dataset.example)">sonar_frequency in [10, 50]</button>
+      <button class="demo-chip" data-example="decel in [0.1, 0.8] when speed > 5" onclick="showDemoResult(this.dataset.example)">decel in [0.1, 0.8] when speed > 5</button>
+      <button class="demo-chip" data-example="regen_current in [-200, 0]" onclick="showDemoResult(this.dataset.example)">regen_current in [-200, 0]</button>
     </div>
 
     <textarea id="demo-guard" class="guard-input demo-textarea"
-      placeholder="Enter a guard constraint, e.g.: battery_temp in [15, 55] with priority HIGH"></textarea>
+      placeholder="Enter any guard constraint, e.g.: battery_temp in [15, 55] with priority HIGH"></textarea>
 
     <div class="demo-actions">
       <button class="btn-primary" onclick="runDemo('compile')">⚡ Compile to FLUX-C</button>
@@ -454,7 +528,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 
   <script>
+    // Point to localhost:5000 for local demo
+    // For external users, chips show pre-computed results
     const API = 'http://localhost:5000';
+    const DEMO_DATA = <?php echo json_encode($demo_examples); ?>;
+    function showDemoResult(id) {
+      const data = DEMO_DATA[id];
+      if (!data) return;
+      const out = document.getElementById('demo-output');
+      out.innerHTML = '<div class="output-section">' +
+        '<div class="output-label">Guard Hash &amp; Size</div>' +
+        '<div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.75rem">' +
+        '<code style="color:var(--accent)">' + data.hash + '</code>' +
+        '<span class="ops-badge">' + data.ops + ' ops</span></div>' +
+        '<div class="output-label">FLUX-C Bytecode</div>' +
+        '<pre style="color:#22c55e">' + escapeHtml(data.asm) + '</pre></div>' +
+        '<p style="color:#64748b;font-size:0.8rem;margin-top:0.75rem">Live demo requires FLUX Certify running on port 5000. <a href="https://github.com/SuperInstance/flux-certify" style="color:var(--accent)">Run it locally →</a></p>';
+      out.classList.add('visible');
+    }
     function loadExample(text) {
       document.getElementById('demo-guard').value = text;
     }
