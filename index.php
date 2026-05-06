@@ -199,7 +199,7 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
               DO-254 DAL A · ISO 26262 ASIL-D · IEC 61508 SIL 3.
             </p>
           </div>
-          <a href="certify.php" class="btn btn-primary" style="white-space:nowrap">Get Started</a>
+          <a href="certify.php" class="btn btn-primary" style="white-space:nowrap">Try Live Demo</a>
         </div>
       </div>
     </div>
