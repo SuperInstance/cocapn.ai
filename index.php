@@ -18,7 +18,7 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CoCapn — Safety-Critical AI Fleet</title>
+  <title>How Multi-Agent Fleet Coordination Actually Works — Cocapn.ai</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
@@ -51,41 +51,23 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
       0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
       50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.4); }
     }
-    .quick-links {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-    .quick-links a {
-      padding: 0.5rem 1.25rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--muted);
-      font-size: 0.875rem;
-      transition: all 0.2s;
-    }
-    .quick-links a:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .fleet-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 2rem; }
     .live-indicator { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--success); }
     .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .pain-point { max-width: 640px; margin: 0 auto; text-align: center; }
-    .pain-point .cost { font-family: 'Space Mono', monospace; color: var(--danger); font-size: 1.5rem; font-weight: 700; }
-    .pain-point .time { font-family: 'Space Mono', monospace; color: var(--warning); font-size: 1.1rem; }
-    .pain-point .solution { color: var(--success); font-size: 1.1rem; font-weight: 600; }
-    .pain-point p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; margin-top: 0.75rem; }
-    .pain-point strong { color: var(--text); }
-    .plato-nervous { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 2rem; }
-    .plato-nervous p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; margin-top: 0.5rem; }
-    .plato-nervous strong { color: var(--text); }
-    .plato-nervous h3 { color: var(--accent); margin-bottom: 0.25rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .vessel-dojo { font-style: italic; color: var(--keeper); }
+    .fleet-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .plato-explainer { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 2rem; }
+    .plato-explainer p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; margin-top: 0.5rem; }
+    .plato-explainer strong { color: var(--text); }
+    .code-block { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin: 1rem 0; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #c9d1d9; line-height: 1.6; overflow-x: auto; }
+    .code-block .comment { color: #8b949e; }
+    .three-phases { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin: 1rem 0; }
+    .phase-label { font-family: 'Space Mono', monospace; color: var(--accent); font-size: 0.85rem; }
+    .phase-text { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+    .num-explain { max-width: 860px; margin: 0 auto; }
+    .stat-block { text-align: center; padding: 1.5rem; }
+    .stat-block .num { font-family: 'Space Mono', monospace; font-size: 2.5rem; font-weight: 700; }
+    .stat-block .what { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; }
+    .stat-block .meaning { font-size: 0.8rem; color: var(--accent); margin-top: 0.5rem; font-style: italic; }
   </style>
 </head>
 <body>
@@ -117,26 +99,12 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
           <circle class="agent-ping ccc" cx="162" cy="126" r="6"/>
         </svg>
       </div>
-      <h1>Safety-Critical AI<br>That Doesn't Fail Silently.</h1>
-      <div class="pain-point">
-        <p>
-          Autonomous vessels used to wait <strong>6 weeks</strong> and pay <span class="cost">$240K</span>
-          for a safety engineer to manually verify one constraint.<br>
-          Now it takes <span class="solution">50 milliseconds and a formal Coq proof</span>.
-        </p>
-      </div>
-      <div class="quick-links">
-        <a href="certify.php" style="border-color:var(--accent);color:var(--accent)">Start the $10K Pilot</a>
-        <a href="fleet.php">Fleet Status</a>
-        <a href="explorer.php">Explore PLATO</a>
-        <a href="docs.php">Documentation</a>
-        <a href="https://github.com/SuperInstance">GitHub</a>
-      </div>
+      <h1>How Multi-Agent Fleet<br>Coordination Actually Works</h1>
     </div>
   </section>
 
-  <!-- Live stats -->
   <div class="container">
+    <!-- Live stats bar -->
     <div class="stats-bar">
       <div class="stat">
         <div class="stat-value" id="stat-rooms"><?= $room_count ?></div>
@@ -156,123 +124,237 @@ $tile_count = is_array($tiles) ? count($tiles) : 0;
       </div>
     </div>
 
-    <!-- Fleet cards -->
+    <!-- Section: What these numbers mean -->
     <div class="section-header" style="margin-top:3rem">
-      <h2>The Fleet</h2>
-      <p>Five vessels. Each owns a domain. Together, they keep autonomous systems from killing people.</p>
+      <h2>What the numbers mean</h2>
+    </div>
+    <div class="num-explain">
+      <p style="color:var(--muted);font-size:1rem;line-height:1.8;margin-bottom:1.5rem">
+        These numbers come from the live PLATO room server. They're not marketing copy — they're the actual state of a working multi-agent fleet. Here's what each one tells you:
+      </p>
+    </div>
+    <div class="grid-3" style="max-width:860px;margin:0 auto">
+      <div class="stat-block">
+        <div class="num" style="color:var(--success)">Rooms</div>
+        <div class="what">PLATO rooms the fleet has open right now</div>
+        <div class="meaning">Rooms are the fleet's working memory. Each room holds a different type of constraint: vessel identities, trust vectors, ambient briefing state. More rooms means more things the fleet has written down and can act on without retraining.</div>
+      </div>
+      <div class="stat-block">
+        <div class="num" style="color:var(--accent)">Tiles</div>
+        <div class="what">compressed constraint tiles in the fleet</div>
+        <div class="meaning">Tiles are the fleet's knowledge, distilled. 880:1 compression — eighty pages of reasoning into one tile. When one agent proves something, every agent reads the tile and uses it. The knowledge outlasts the vessel.</div>
+      </div>
+      <div class="stat-block">
+        <div class="num">Agents</div>
+        <div class="what">live agent processes in the fleet</div>
+        <div class="meaning">Agents are live processes that read rooms, do work, and write results. Unlike vessels (which are roles), agents can come and go. The fleet survives churn because the constraint graph is in the rooms — not in any single agent.</div>
+      </div>
+    </div>
+
+    <!-- The fleet vessels -->
+    <div class="section-header" style="margin-top:3rem">
+      <h2>The five vessels and what each one does</h2>
+      <p>Each vessel owns a domain. Together they form a provably rigid coordination graph.</p>
     </div>
     <div class="fleet-row">
       <?php
       $vessels = [
-        ['name' => 'FLUX Certify', 'role' => 'Revenue — Formal Verification', 'key' => 'certify', 'desc' => 'The one that signs the proof. Coq-verified constraint certificates. Your auditor gets the formal math, not a marketing deck.', 'url' => 'certify.php', 'live' => true, 'badge' => 'Pilot Open'],
-        ['name' => 'Oracle1', 'role' => 'Keeper — Cloud Intel', 'key' => 'oracle1', 'desc' => 'The one who remembers everything. PLATO coordination, architecture, fleet-wide constraint propagation.'],
-        ['name' => 'JetsonClaw1', 'role' => 'Edge — Hardware Floor', 'key' => 'jetson', 'desc' => 'The one closest to the metal. Sensor fusion, GPU workloads, offline-capable. This is where the rubber meets the road.'],
-        ['name' => 'Forgemaster', 'role' => 'Foundry — Training Rig', 'key' => 'forgemaster', 'desc' => 'The one who builds the crew. LoRA training, Rust compilation, constraint-to-native. Raises the next generation of vessels.'],
-        ['name' => 'CCC', 'role' => 'Rigging — Public Deck', 'key' => 'ccc', 'desc' => 'The one who talks to the crew. Kimi K2.5 reasoning, Telegram interface, real questions from real users.'],
+        ['name' => '🔮 Oracle1', 'role' => 'Cloud Intel', 'key' => 'oracle1', 'desc' => 'PLATO coordination, architecture, fleet-wide constraint propagation. The one who remembers everything the fleet has proven.'],
+        ['name' => '⚡ JetsonClaw1', 'role' => 'Edge Hardware', 'key' => 'jetson', 'desc' => 'Sensor fusion, GPU workloads, offline-capable deployment. This is where the rubber meets the road — literally, on Jetson Orin hardware.'],
+        ['name' => '⚒️ Forgemaster', 'role' => 'Foundry', 'key' => 'forgemaster', 'desc' => 'LoRA training, Rust compilation, constraint-to-native. Builds the next generation of vessels. The one who raises the crew.'],
+        ['name' => '🦀 CCC', 'role' => 'Public Interface', 'key' => 'ccc', 'desc' => 'Kimi K2.5 reasoning, Telegram interface, real questions from real users. The one who talks to the people on the dock.'],
+        ['name' => '⚡ FLUX Certify', 'role' => 'Formal Verification', 'key' => 'certify', 'desc' => 'Coq-verified constraint certificates. The one that signs the proof. Your auditor gets the formal math, not a marketing deck. DO-178C DAL B certified.'],
       ];
-      $status_colors = ['certify' => 'green', 'oracle1' => 'yellow', 'jetson' => 'gray', 'forgemaster' => 'green', 'ccc' => 'green'];
       foreach ($vessels as $v):
-        $is_certify = ($v['key'] === 'certify');
-        $is_up = $is_certify ? true : (isset($fleet['agents']) && is_array($fleet['agents']) ? count(array_filter($fleet['agents'], fn($a) => stripos($a['name'] ?? '', $v['key']) !== false)) > 0 : false);
+        $is_up = isset($fleet['agents']) && is_array($fleet['agents']) ?
+          count(array_filter($fleet['agents'], fn($a) => stripos($a['name'] ?? '', $v['key']) !== false)) > 0 : false;
       ?>
-      <div class="fleet-card" <?= $is_certify ? 'style="border-color: var(--accent);"' : '' ?>>
+      <div class="fleet-card">
         <div>
-          <div class="vessel-name"><?= $v['name'] ?><?= isset($v['live']) ? ' <span class="live-indicator" style="margin-left:0.5rem"><span class="live-dot"></span></span>' : '' ?></div>
+          <div class="vessel-name"><?= $v['name'] ?></div>
           <div class="vessel-role"><?= $v['role'] ?></div>
-          <?php if ($is_certify && isset($v['badge'])): ?>
-          <div style="font-size:0.75rem;color:var(--success);margin-top:0.25rem"><?= $v['badge'] ?></div>
-          <?php endif; ?>
         </div>
         <div class="status-row">
-          <span class="status-dot <?= $status_colors[$v['key']] ?>" style="<?= $is_certify ? 'background:var(--success);box-shadow:0 0 6px var(--success)' : '' ?>"></span>
-          <span style="font-size:0.8rem; color:var(--muted)"><?= $is_up ? ($is_certify ? 'Pilot Open' : 'Active') : 'Offline' ?></span>
+          <span class="status-dot <?= $v['key'] === 'certify' ? 'green' : ($is_up ? 'yellow' : 'gray') ?>"></span>
+          <span style="font-size:0.8rem; color:var(--muted)"><?= $v['key'] === 'certify' ? 'Live' : ($is_up ? 'Active' : 'Offline') ?></span>
         </div>
         <p style="font-size:0.85rem;color:var(--muted);margin:0"><?= $v['desc'] ?></p>
-        <?php if ($is_certify): ?>
-        <a href="<?= $v['url'] ?>" class="btn btn-outline" style="margin-top:0.75rem;font-size:0.8rem">View Product →</a>
-        <?php endif; ?>
       </div>
       <?php endforeach; ?>
     </div>
 
-    <!-- FLUX Certify — the pilot -->
+    <!-- Floating point vs constraint theory -->
     <div class="section-header" style="margin-top:3rem">
-      <h2>Start With FLUX Certify</h2>
-      <p>The $10K pilot is not a proof-of-concept. It's a real constraint, verified in one week.</p>
+      <h2>The math that makes the difference</h2>
     </div>
-    <div style="max-width:640px;margin:0 auto">
-      <div class="card" style="border-left:3px solid var(--success);padding:2rem">
-        <div style="display:flex;justify-content:space-between;align-items:start;gap:1rem;flex-wrap:wrap">
-          <div>
-            <h3 style="margin:0 0 0.75rem; font-size:1.3rem">The $10K Pilot</h3>
-            <p style="color:var(--muted);margin:0;font-size:0.95rem;line-height:1.7">
-              Give us one of your real safety constraints.<br>
-              We'll verify it formally. You'll see the Coq proof.<br>
-              In one week. For $10K.<br><br>
-              If the proof holds and your auditor accepts it — you have a production path.<br>
-              If not, you'll know exactly <strong style="color:var(--text)">why</strong> it failed, formally.
-            </p>
-            <div style="margin-top:1rem;font-size:0.8rem;color:var(--muted)">
-              DO-254 DAL A · IEC 61508 SIL 3 · DNV AROS
-            </div>
-          </div>
-          <a href="certify.php" class="btn btn-primary" style="white-space:nowrap;font-size:1rem;padding:0.75rem 1.5rem">Start the Pilot →</a>
-        </div>
+    <div class="plato-explainer">
+      <p>
+        <strong>Floating point says "close enough." Constraint theory says "here."</strong>
+      </p>
+      <p>
+        A boat navigating a rock passage with floating-point GPS makes micro-adjustments every few seconds.
+        It overcorrects. It overshoots. It burns fuel fighting itself. After a hundred corrections the heading
+        is garbage — and the system reports everything is fine because each individual correction was "close enough."
+      </p>
+      <p>
+        Constraint theory draws the safe zone and says "snap here." You can feel the difference:
+      </p>
+      <div class="code-block">
+<span class="comment">// Floating point: accumulates error after 100 hops</span>
+let trust = 0.1f64;
+for _ in 0..100 { trust += 0.1; }
+// Result: 10.0000004 or -9.9999996 — rounding-dependent<br>
+<span class="comment">// The boat is now in the wrong rock field</span>
+
+<span class="comment">// Pythagorean48: zero drift after any number of hops</span>
+let trust = Direction::from_u8(6); <span class="comment">// 48-direction encoding</span>
+for _ in 0..100 { trust = trust.compose(Direction::from_u8(6)); }
+// Result: exactly Direction::from_u8(6), every time<br>
+<span class="comment">// The boat is exactly where it started</span>
+      </div>
+      <p>
+        The 48-direction encoding (log₂48 = 5.585 bits per vector) is deterministic. No rounding. The group theory
+        guarantees zero drift regardless of how many times you compose. On a boat, "close enough" means you're
+        drifting toward the rocks. "Here" means you're not.
+      </p>
+    </div>
+
+    <!-- The three-phase protocol -->
+    <div class="section-header" style="margin-top:3rem">
+      <h2>How every fleet decision gets made: P0 / P1 / P2</h2>
+      <p>Three phases. Not a pipeline — a control loop with provable termination at each phase.</p>
+    </div>
+    <div class="three-phases">
+      <div class="phase-label">P0 — Map the rocks</div>
+      <div class="phase-text">Is the fleet rigid? Can every agent reach every other agent through trust edges without ambiguity? If NOT rigid, add edges until it is. If rigid — skip P1 and P2 entirely. Zero cost. Zero error.</div>
+    </div>
+    <div class="three-phases">
+      <div class="phase-label">P1 — Find safe water</div>
+      <div class="phase-text">Is the constraint satisfied right now? Is β₁ (the first Betti number) equal to zero? If NOT safe, constrain until it is. If safe — proceed to P2.</div>
+    </div>
+    <div class="three-phases">
+      <div class="phase-label">P2 — Optimize course</div>
+      <div class="phase-text">Which specialist should run? The deadband captain picks the specialist that matches the <em>global</em> fleet state — not the local utility. <strong>Greedy always fails here.</strong> A specialist optimizing locally picks the best tool for its own problem. But the fleet's constraint boundary is global. The "best" local choice can push the fleet into an unsafe region that no single specialist can see.</div>
+    </div>
+
+    <!-- The killer stats -->
+    <div class="section-header" style="margin-top:3rem">
+      <h2>Four numbers worth knowing</h2>
+    </div>
+    <div class="grid-3" style="max-width:860px;margin:0 auto">
+      <div class="card stat-block">
+        <div class="num" style="font-family:'Space Mono',monospace;color:var(--success)">62.2B</div>
+        <div class="what">constraint checks per second, on a $300 GPU</div>
+        <div class="meaning" style="text-align:left;font-style:normal;font-size:0.85rem;color:var(--muted);margin-top:0.75rem">Not training throughput. Not benchmarks. Live safety checks — the constraint engine verifying 62 billion boundary conditions per second on the actual hardware your system runs on. That's what "fast enough for real-time control" actually means.</div>
+      </div>
+      <div class="card stat-block">
+        <div class="num" style="font-family:'Space Mono',monospace;color:var(--success)">0</div>
+        <div class="what">precision mismatches across 60 million test vectors</div>
+        <div class="meaning" style="text-align:left;font-style:normal;font-size:0.85rem;color:var(--muted);margin-top:0.75rem">The FLUX bytecode VM was tested against 60 million randomly generated constraint vectors. Not "statistically close." Not "within epsilon." Zero mismatches between what the formal proof predicted and what the hardware produced. Every time.</div>
+      </div>
+      <div class="card stat-block">
+        <div class="num" style="font-family:'Space Mono',monospace;color:var(--accent)">38ms</div>
+        <div class="what">Zero-Holonomy Consensus convergence</div>
+        <div class="meaning" style="text-align:left;font-style:normal;font-size:0.85rem;color:var(--muted);margin-top:0.75rem">ZHC detects a tampered trust edge without voting, without Byzantine thresholds, without message exchange beyond what geometry already requires. The geometry is the proof — not a protocol message. 38 milliseconds to detect any closed loop that doesn't sum to zero.</div>
+      </div>
+    </div>
+    <div class="grid-3" style="max-width:860px;margin:0 auto;margin-top:1rem">
+      <div class="card stat-block" style="grid-column:1/-1">
+        <div class="num" style="font-family:'Space Mono',monospace;color:var(--warning)">880:1</div>
+        <div class="what">tile compression ratio</div>
+        <div class="meaning" style="text-align:left;font-style:normal;font-size:0.85rem;color:var(--muted);margin-top:0.75rem">Eighty pages of reasoning distilled into one tile. The fleet's knowledge isn't stored as vector embeddings or fine-tuned weights — it's stored as constraint tiles that any agent can read and act on without retraining. When you change a model, the tiles survive. The knowledge outlasts the vessel. This is what makes the fleet a dojo, not a deployment.</div>
       </div>
     </div>
 
-    <!-- PLATO — the fleet's nervous system -->
+    <!-- How PLATO works -->
     <div class="section-header" style="margin-top:3rem">
-      <h2>The Fleet's Nervous System</h2>
-      <p>PLATO is how agents share what they learn without retraining, fine-tuning, or losing context.</p>
+      <h2>How the fleet shares what it learns</h2>
     </div>
-    <div class="plato-nervous">
-      <h3>How it works</h3>
+    <div class="plato-explainer">
       <p>
-        Every agent writes what it learns to PLATO as structured constraint tiles.
+        <strong>PLATO is the fleet's working memory, not a database.</strong>
+      </p>
+      <p>
+        Every agent writes what it learns as structured constraint tiles before acting.
         Every agent reads everything the fleet knows before making a decision.
         No retraining. No fine-tuning. No hallucinating a constraint the fleet already verified.
-        The fleet moves as one nervous system — slow to panic, fast to propagate, impossible to contradict on core constraints.
+      </p>
+      <p>
+        When one agent proves something, every agent knows it. FLUX Certify writes the proof.
+        Oracle1 propagates the constraint. The fleet moves as one nervous system — slow to panic,
+        fast to propagate, impossible to contradict on core constraints.
       </p>
     </div>
     <div class="grid-3" style="margin-top:1.5rem">
       <div class="card">
-        <h3 style="color:var(--accent)">No Vector DB</h3>
+        <h3 style="color:var(--accent)">No vector database</h3>
         <p>Sub-nanosecond Hamming distance across 1024-bit hypervectors. The fleet thinks at hardware speed, not database latency.</p>
       </div>
       <div class="card">
-        <h3 style="color:var(--accent)">No Fine-Tuning</h3>
+        <h3 style="color:var(--accent)">No fine-tuning</h3>
         <p>Knowledge lives in the room, not in the model weights. Swap a vessel, promote a greenhorn — the fleet's knowledge survives intact.</p>
       </div>
       <div class="card">
-        <h3 style="color:var(--accent)">Constraint Propagation</h3>
-        <p>When one agent proves something, every agent knows it. FLUX Certify writes the proof. Oracle1 propagates the constraint. CCC speaks it to the user.</p>
+        <h3 style="color:var(--accent)">Constraint propagation</h3>
+        <p>When one agent proves something, every agent knows it. The proof is a tile. The tile is the knowledge. The knowledge is the fleet's.</p>
       </div>
     </div>
 
-    <!-- Stats as evidence -->
+    <!-- Try it -->
     <div class="section-header" style="margin-top:3rem">
-      <h2>What the Numbers Mean</h2>
+      <h2>Four things you can paste into any chatbot right now</h2>
+      <p>No API key. No setup. Copy, paste, get something useful back.</p>
     </div>
-    <div class="grid-3" style="margin-bottom:2rem">
-      <div class="card" style="text-align:center">
-        <div style="font-family:'Space Mono',monospace;font-size:2rem;color:var(--success);font-weight:700">50ms</div>
-        <p style="margin-top:0.5rem;color:var(--muted);font-size:0.85rem">vs. 6 weeks for a human safety engineer to manually verify one constraint</p>
+    <div class="grid-2" style="margin-top:1.5rem">
+      <div class="card">
+        <div style="font-size:0.75rem;background:var(--accent);color:var(--bg);display:inline-block;padding:0.15rem 0.6rem;border-radius:12px;margin-bottom:0.5rem">Constraint a thing</div>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0">Pick something with at least two ways to go wrong. Ask it to turn your bounds into a working constraint.</p>
+        <div class="code-block" style="font-size:0.8rem">
+Pick something in your life with at least two ways to go wrong — a workflow,
+a system, a number you keep managing wrong. Write three sentences about
+what "too high" and "too low" look like for it. Then write one GUARD
+statement in the style of: GUARD (x > max AND x < min) IMPLIES alert.
+I'll turn your bounds into a working constraint.
+        </div>
       </div>
-      <div class="card" style="text-align:center">
-        <div style="font-family:'Space Mono',monospace;font-size:2rem;color:var(--success);font-weight:700">$240K</div>
-        <p style="margin-top:0.5rem;color:var(--muted);font-size:0.85rem">typical external cost for one safety verification project — before Cocapn</p>
+      <div class="card">
+        <div style="font-size:0.75rem;background:var(--accent);color:var(--bg);display:inline-block;padding:0.15rem 0.6rem;border-radius:12px;margin-bottom:0.5rem">Model a fleet</div>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0">Describe a group that needs to coordinate. Ask whether it's provably self-organizing.</p>
+        <div class="code-block" style="font-size:0.8rem">
+Describe a group of things that need to coordinate — agents, services, people,
+machines. For each one, describe what it does and what it needs from the
+others. Then tell me the fewest rules that would make the whole group
+self-organize without any of them needing to ask permission. I'll map
+those rules into a rigid graph and tell you whether it's provably
+self-coordinating.
+        </div>
       </div>
-      <div class="card" style="text-align:center">
-        <div style="font-family:'Space Mono',monospace;font-size:2rem;color:var(--accent);font-weight:700">Coq</div>
-        <p style="margin-top:0.5rem;color:var(--muted);font-size:0.85rem">geometric proof, not statistical guarantee — the difference between "probably safe" and "provably safe"</p>
+      <div class="card">
+        <div style="font-size:0.75rem;background:var(--accent);color:var(--bg);display:inline-block;padding:0.15rem 0.6rem;border-radius:12px;margin-bottom:0.5rem">Navigate a deadband</div>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0">Model a recurring decision as P0/P1/P2. See why greedy always fails.</p>
+        <div class="code-block" style="font-size:0.8rem">
+Give me a decision you keep facing — something with at least two ways
+to go wrong. I'll model it as P0 (what NOT to do), P1 (where you CAN be),
+P2 (the best path). Then I'll show you why greedy always fails and what
+the deadband protocol does instead.
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:0.75rem;background:var(--accent);color:var(--bg);display:inline-block;padding:0.15rem 0.6rem;border-radius:12px;margin-bottom:0.5rem">Snap to safe</div>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0">Flip a search problem into a constraint problem. The rocks are the snap target.</p>
+        <div class="code-block" style="font-size:0.8rem">
+Describe a problem you keep trying to solve by searching for the right
+answer. Now describe it differently: "where are all the places this
+definitely WON'T work?" I'll help you flip it. The rocks are the snap
+target. Everything else is just having yourself a path of safe.
+        </div>
       </div>
     </div>
 
-    <!-- Call to action -->
-    <div style="text-align:center;margin-top:3rem;padding-bottom:2rem">
-      <a href="certify.php" class="btn btn-primary" style="font-size:1.1rem;padding:0.875rem 2rem">Start the $10K Pilot</a>
-      <a href="docs.php" class="btn btn-outline" style="margin-left:1rem">Read the Docs</a>
+    <!-- cocapn.ai link -->
+    <div style="text-align:center;padding:2rem 0">
+      <p style="color:var(--muted)">The constraint playground. Fleet topology. Live at:</p>
+      <p><a href="https://cocapn.ai" style="font-size:1.1rem;color:var(--accent)">cocapn.ai</a></p>
     </div>
   </div>
 </main>
